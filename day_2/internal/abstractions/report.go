@@ -70,6 +70,7 @@ func (r *Report) GetStatus() Status {
 		}
 
 		if deltaSign != currentDeltaSign {
+			
 			if r.isBadLevelAcceptable(&badLevelsCount) {
 				skipPreviousLevel = true
 				continue
@@ -88,11 +89,7 @@ func (r *Report) isBadLevelAcceptable(
 
 	*badLevelsCount++
 
-	if *badLevelsCount <= BadLevelsTolerance {
-		return true
-	}
-
-	return false
+	return *badLevelsCount <= BadLevelsTolerance
 }
 
 func (r *Report) getDeltaSign(

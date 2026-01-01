@@ -9,7 +9,7 @@ func TestReport_GetStatus(t *testing.T) {
 		expectedStatus Status
 	}{
 		{
-			name: "given ",
+			name: "decreasing_by_1_or_2_is_safe (7 6 4 2 1)",
 			levels: []Level{
 				Level(7),
 				Level(6),
@@ -20,7 +20,7 @@ func TestReport_GetStatus(t *testing.T) {
 			expectedStatus: StatusSafe,
 		},
 		{
-			name: "given ",
+			name: "increase_jump_greater_than_3_is_unsafe (1 2 7 8 9)",
 			levels: []Level{
 				Level(1),
 				Level(2),
@@ -31,7 +31,7 @@ func TestReport_GetStatus(t *testing.T) {
 			expectedStatus: StatusUnsafe,
 		},
 		{
-			name: "given ",
+			name: "decrease_drop_greater_than_3_is_unsafe (9 7 6 2 1)",
 			levels: []Level{
 				Level(9),
 				Level(7),
@@ -42,7 +42,7 @@ func TestReport_GetStatus(t *testing.T) {
 			expectedStatus: StatusUnsafe,
 		},
 		{
-			name: "given ",
+			name: "direction_change_is_unsafe (1 3 2 4 5)",
 			levels: []Level{
 				Level(1),
 				Level(3),
@@ -53,7 +53,7 @@ func TestReport_GetStatus(t *testing.T) {
 			expectedStatus: StatusSafe,
 		},
 		{
-			name: "given ",
+			name: "equal_adjacent_levels_is_unsafe (8 6 4 4 1)",
 			levels: []Level{
 				Level(8),
 				Level(6),
@@ -64,7 +64,7 @@ func TestReport_GetStatus(t *testing.T) {
 			expectedStatus: StatusSafe,
 		},
 		{
-			name: "given ",
+			name: "increasing_by_1_to_3_is_safe (1 3 6 7 9)",
 			levels: []Level{
 				Level(1),
 				Level(3),
