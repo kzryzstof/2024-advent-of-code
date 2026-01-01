@@ -1,7 +1,6 @@
 package main
 
 import (
-	"day_3/internal/algorithms"
 	"fmt"
 	"os"
 	"time"
@@ -20,19 +19,21 @@ func main() {
 	reader := getReader(inputFile)
 
 	/* Reads all the reports */
-	reports := reader.Read()
+	program := reader.Read()
 
-	safeReportsCount := algorithms.CountSafeReports(reports)
+	fmt.Printf("Executing %d instructions\n", program.GetInstructionsCount())
+
+	total := program.Execute()
 
 	/* Prints the results */
-	fmt.Printf("Safe reports: %d\n", safeReportsCount)
+	fmt.Printf("The total is %d\n", total)
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }
 
 func getReader(
 	inputFile []string,
-) *io.ReportsReader {
+) *io.ProgramReader {
 	reader, err := io.NewReader(inputFile[0])
 
 	if err != nil {
