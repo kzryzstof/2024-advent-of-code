@@ -22,6 +22,7 @@ At the moment, the following days are implemented:
 
 - `day_4/` – **Day 4: Ceres Search (word search)**
   - Part 1: count all occurrences of `XMAS` in a letter grid across 8 directions (including backwards and diagonals)
+  - Part 2: count all X-MAS patterns (two `MAS` crossing diagonally in an X shape, either direction on each diagonal)
 
 See each day’s README (`day_1/README.md`, `day_2/README.md`, `day_3/README.md`, `day_4/README.md`) for details about the approach and how to run it.
 

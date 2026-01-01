@@ -5,15 +5,23 @@ type Grid struct {
 }
 
 var (
-	Right      = Vector{0, 1}
 	UpRight    = Vector{-1, 1}
-	Up         = Vector{-1, 0}
 	UpLeft     = Vector{-1, -1}
-	Left       = Vector{0, -1}
 	DownLeft   = Vector{1, -1}
-	Down       = Vector{1, 0}
 	DownRight  = Vector{1, 1}
-	Directions = []Vector{UpRight, Up, UpLeft, Left, DownLeft, Down, DownRight, Right}
+	Directions = []Vector{
+		UpLeft,
+		UpRight,
+		DownRight,
+		DownLeft,
+	}
+
+	Patterns = []string{
+		"MSSM",
+		"MMSS",
+		"SMMS",
+		"SSMM",
+	}
 )
 
 func NewGrid(
@@ -22,44 +30,55 @@ func NewGrid(
 	return &Grid{letters}
 }
 
-func (g *Grid) CountWord(
-	word string,
-) int64 {
+func (g *Grid) CountXmasPatterns() int64 {
 
-	count := int64(0)
+	patternsCount := int64(0)
 
 	for rowIndex, row := range g.letters {
 		for columnIndex, letter := range row {
-			if letter == 'X' {
-				for _, direction := range Directions {
-					if g.IsWordPresent(word, rowIndex, columnIndex, direction) {
-						count++
+			if letter == 'A' {
+				for _, pattern := range Patterns {
+					if g.isPattern(pattern, rowIndex, columnIndex) {
+						patternsCount++
+						break
 					}
 				}
 			}
 		}
 	}
 
-	return count
+	return patternsCount
 }
 
-func (g *Grid) IsWordPresent(
-	word string,
+func (g *Grid) isPattern(
+	pattern string,
+	fromRow int,
+	fromCol int,
+) bool {
+	for index, letter := range pattern {
+		if !g.isLetterPresent(letter, fromRow, fromCol, Directions[index]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (g *Grid) isLetterPresent(
+	letter int32,
 	fromRow int,
 	fromCol int,
 	direction Vector,
 ) bool {
-	for letterIndex := 1; letterIndex < len(word); letterIndex++ {
-		row := fromRow + letterIndex*int(direction.X)
-		col := fromCol + letterIndex*int(direction.Y)
+	row := fromRow + int(direction.X)
+	col := fromCol + int(direction.Y)
 
-		if row < 0 || col < 0 || row >= len(g.letters) || col >= len(g.letters[row]) {
-			return false
-		}
+	if row < 0 || col < 0 || row >= len(g.letters) || col >= len(g.letters[row]) {
+		return false
+	}
 
-		if g.letters[row][col] != int32(word[letterIndex]) {
-			return false
-		}
+	if g.letters[row][col] != letter {
+		return false
 	}
 
 	return true

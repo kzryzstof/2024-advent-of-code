@@ -1,12 +1,15 @@
-# Advent of Code 2024 — Day 4 (Part 1)
+# Advent of Code 2024 — Day 4 (Part 2)
 
 This folder contains a Go solution for **Day 4: Ceres Search**.
 
-The input is a rectangular grid of uppercase letters (a word search). The goal is to count **all** occurrences of the word **`XMAS`**, where matches may be:
+Part 2 changes the task: instead of searching for the word `XMAS` in straight lines, you must find an **X-MAS** shape:
 
-- horizontal, vertical, or diagonal
-- forwards or backwards
-- overlapping
+- two occurrences of `MAS` that form an `X`
+- each `MAS` can be read forward (`M-A-S`) or backward (`S-A-M`)
+
+Visually, an X-MAS is centered on an `A` and uses the four diagonal neighbors:
+
+- top-left, top-right, bottom-right, bottom-left
 
 ## Implementation overview
 
@@ -14,37 +17,52 @@ The input is a rectangular grid of uppercase letters (a word search). The goal i
 
 - The input file is scanned line-by-line using a `bufio.Scanner`.
 - Each line becomes one row of the grid.
-- The grid is stored as a 2D slice of `int32` (`[][]int32`) holding the rune values for each character.
+- The grid is stored in memory as a 2D slice of letters: `[][]int32`.
 
-### 2) Search for the word in all 8 directions (`internal/abstractions/grid.go`)
+### 2) Count X-MAS patterns (`internal/abstractions/grid.go`)
 
-The search is implemented in `Grid.CountWord(word string)`:
+The solver counts patterns with `Grid.CountXmasPatterns()`.
 
-1. Iterate over every cell `(row, col)`.
-2. Only consider starting positions whose letter is `'X'` (the first character of `XMAS`).
-3. For each `'X'`, try all 8 directions:
+High-level idea:
 
-- Right, Left
-- Up, Down
-- UpRight, UpLeft
-- DownRight, DownLeft
+- An X-MAS must be centered on an `A`.
+- Around that `A`, the four diagonal cells must contain `M` and `S` in one of the valid configurations that corresponds to:
+  - `MAS` on one diagonal and `MAS` (or `SAM`) on the other diagonal.
 
-These directions are expressed as `Vector{X, Y}` step offsets and stored in the `Directions` slice.
+#### Directions
 
-### 3) Check a candidate match with bounds + character checks
+The four diagonal directions are represented as vectors:
 
-`Grid.IsWordPresent(word, fromRow, fromCol, direction)` validates a match by:
+- `UpLeft  = (-1, -1)`
+- `UpRight = (-1,  1)`
+- `DownRight = (1,  1)`
+- `DownLeft  = (1, -1)`
 
-- stepping 1, 2, 3 cells away from the start (for the remaining letters of `XMAS`)
-- rejecting immediately if the step goes out of bounds
-- comparing the grid letter at each stepped cell against `word[letterIndex]`
+They are stored in the `Directions` slice in that order.
 
-If all characters match, the word is present in that direction and the total counter is incremented.
+#### Pattern matching
 
-This approach naturally handles:
+For each cell `(row, col)` that contains `A`, we look at the four diagonal letters around it and build an implicit 4-character “signature” in this order:
 
-- reversed matches (because directions include both forward and backward vectors)
-- overlaps (each match is counted independently)
+`UpLeft, UpRight, DownRight, DownLeft`
+
+The implementation checks the signature against 4 allowed patterns:
+
+- `MSSM`
+- `MMSS`
+- `SMMS`
+- `SSMM`
+
+These are exactly the cases where:
+
+- one diagonal is `M-A-S` and the other diagonal is also `M-A-S`,
+  or either/both are reversed as `S-A-M`.
+
+As soon as one pattern matches for an `A` center, we count **one** X-MAS and move on.
+
+### 3) Bounds checking
+
+Each diagonal lookup verifies the target coordinate is inside the grid. If any required diagonal cell is out of bounds, that candidate center cannot form an X-MAS.
 
 ## How to run
 
@@ -56,6 +74,5 @@ go run ./cmd ./input.txt
 
 Expected output shape:
 
-- `The word 'XMAS' appeared <n> times`
+- `The 'XMAS' pattern appeared <n> times`
 - `Execution time: <duration>`
-
