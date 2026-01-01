@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"day_4/internal/io"
+	"day_5/internal/io"
 )
 
 func main() {
@@ -22,6 +22,8 @@ func main() {
 	grid := reader.Read()
 
 	count := grid.CountXmasPatterns()
+
+	//	1053	Too low!
 
 	/* Prints the results */
 	fmt.Printf("The 'XMAS' pattern appeared %d times\n", count)
