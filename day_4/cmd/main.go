@@ -22,7 +22,7 @@ func main() {
 	grid := reader.Read()
 
 	count := grid.CountWord("XMAS")
-	
+
 	/* Prints the results */
 	fmt.Printf("The word 'XMAS' appeared %d times", count)
 
