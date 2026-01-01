@@ -63,20 +63,17 @@ func (r *Report) getDeltaSign(
 	previousLevel Level,
 ) (int, error) {
 
-	deltaSign := 0
-
 	delta := int(level) - int(previousLevel)
-	unsignedDelta := math.Abs(float64(delta))
 
-	if unsignedDelta < MinDelta || unsignedDelta > MaxDelta {
-		return 0, fmt.Errorf("delta out of bounds: %g", unsignedDelta)
+	absDelta := math.Abs(float64(delta))
+
+	if absDelta < MinDelta || absDelta > MaxDelta {
+		return 0, fmt.Errorf("delta out of bounds: %g", absDelta)
 	}
 
 	if delta <= 0 {
-		deltaSign = -1
-	} else {
-		deltaSign = 1
+		return -1, nil
 	}
 
-	return deltaSign, nil
+	return 1, nil
 }

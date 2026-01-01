@@ -10,10 +10,6 @@ import (
 	"day_2/internal/abstractions"
 )
 
-const (
-	DefaultInstructionsSliceCapacity = 1000
-)
-
 type ReportsReader struct {
 	inputFile *os.File
 }
