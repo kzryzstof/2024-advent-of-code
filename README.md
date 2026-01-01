@@ -16,7 +16,10 @@ At the moment, the following days are implemented:
   - Part 1: count reports that are strictly increasing or strictly decreasing, with adjacent deltas in `[1..3]`
   - Part 2: same rules, but a report also counts as safe if removing **one** level makes it safe ("Problem Dampener")
 
-See each day’s README (`day_1/README.md`, `day_2/README.md`) for details about the approach and how to run it.
+- `day_3/` – **Day 3: Mull It Over (corrupted memory parser)**
+  - Part 1: scan the corrupted program memory for valid `mul(X,Y)` instructions and sum all multiplication results
+
+See each day’s README (`day_1/README.md`, `day_2/README.md`, `day_3/README.md`) for details about the approach and how to run it.
 
 ## Running a day
 
