@@ -39,6 +39,7 @@ func (r *ReportsReader) Read() []abstractions.Report {
 	scanner := bufio.NewScanner(r.inputFile)
 
 	reports := make([]abstractions.Report, 0)
+	lineNumber := uint(1)
 
 	for scanner.Scan() {
 
@@ -48,7 +49,7 @@ func (r *ReportsReader) Read() []abstractions.Report {
 			continue
 		}
 
-		report, err := extractReport(line)
+		report, err := extractReport(lineNumber, line)
 
 		if err != nil {
 			os.Exit(1)
@@ -58,12 +59,15 @@ func (r *ReportsReader) Read() []abstractions.Report {
 			reports,
 			*report,
 		)
+
+		lineNumber++
 	}
 
 	return reports
 }
 
 func extractReport(
+	lineNumber uint,
 	line string,
 ) (*abstractions.Report, error) {
 
@@ -71,18 +75,19 @@ func extractReport(
 
 	levels := make([]abstractions.Level, len(levelValues))
 
-	for _, levelValue := range levelValues {
+	for index, levelValue := range levelValues {
 		level, err := strconv.Atoi(levelValue)
 
 		if err != nil {
-			fmt.Printf("Error converting level '%s' to int: %v\n", levelValue[0], err)
+			fmt.Printf("Error converting level '%s' to int: %v\n", levelValue, err)
 			return nil, err
 		}
 
-		levels = append(levels, abstractions.Level(level))
+		levels[index] = abstractions.Level(level)
 	}
 
-	return &abstractions.Report{
-		Levels: levels,
-	}, nil
+	return abstractions.NewReport(
+		lineNumber,
+		levels,
+	), nil
 }

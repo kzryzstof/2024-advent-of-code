@@ -1,6 +1,7 @@
 package main
 
 import (
+	"day_2/internal/algorithms"
 	"fmt"
 	"os"
 	"time"
@@ -21,8 +22,10 @@ func main() {
 	/* Reads all the reports */
 	reports := reader.Read()
 
+	safeReportsCount := algorithms.CountSafeReports(reports)
+
 	/* Prints the results */
-	fmt.Printf("Reports: %d\n", len(reports))
+	fmt.Printf("Safe reports: %d\n", safeReportsCount)
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }
