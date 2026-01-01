@@ -1,6 +1,6 @@
-# 2025 Advent of Code
+# 2024 Advent of Code
 
-This repository contains my solutions for the **Advent of Code 2025** programming puzzles, implemented in Go, a language I am currently learning.
+This repository contains my solutions for the **Advent of Code 2024** programming puzzles, implemented in Go, a language I am currently learning.
 
 Each day lives in its own folder (`day_1`, `day_2`, `day_3`, `day_4`, …) with its own `go.mod`, a small command-line entrypoint under `cmd/`, and an `internal` package that holds the core logic.
 
