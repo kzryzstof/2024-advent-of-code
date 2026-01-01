@@ -11,7 +11,7 @@ func main() {
 	inputFile := os.Args[1:]
 	fmt.Println(inputFile)
 
-	/* 	Initializes the parser */
+	/* 	Initializes the reader */
 	instructionsParser := getReader(inputFile)
 
 	/* Reads all the lists from the office */
