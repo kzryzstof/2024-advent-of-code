@@ -20,7 +20,10 @@ At the moment, the following days are implemented:
   - Part 1: scan the corrupted program memory for valid `mul(X,Y)` instructions and sum all multiplication results
   - Part 2: also process `do()` / `don't()` to enable or disable future multiplications, then sum only the enabled `mul` results
 
-See each day’s README (`day_1/README.md`, `day_2/README.md`, `day_3/README.md`) for details about the approach and how to run it.
+- `day_4/` – **Day 4: Ceres Search (word search)**
+  - Part 1: count all occurrences of `XMAS` in a letter grid across 8 directions (including backwards and diagonals)
+
+See each day’s README (`day_1/README.md`, `day_2/README.md`, `day_3/README.md`, `day_4/README.md`) for details about the approach and how to run it.
 
 ## Running a day
 

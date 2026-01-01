@@ -24,7 +24,7 @@ func main() {
 	count := grid.CountWord("XMAS")
 
 	/* Prints the results */
-	fmt.Printf("The word 'XMAS' appeared %d times", count)
+	fmt.Printf("The word 'XMAS' appeared %d times\n", count)
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }
