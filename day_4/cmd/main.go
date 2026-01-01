@@ -19,21 +19,17 @@ func main() {
 	reader := getReader(inputFile)
 
 	/* Reads all the reports */
-	program := reader.Read()
-
-	fmt.Printf("Executing %d instructions\n", program.GetInstructionsCount())
-
-	total := program.Execute()
+	grid := reader.Read()
 
 	/* Prints the results */
-	fmt.Printf("The total is %d\n", total)
+	fmt.Printf("%v", grid)
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }
 
 func getReader(
 	inputFile []string,
-) *io.ProgramReader {
+) *io.GridReader {
 	reader, err := io.NewReader(inputFile[0])
 
 	if err != nil {
