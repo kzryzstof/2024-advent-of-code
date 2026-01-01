@@ -74,7 +74,7 @@ func extractLocationIds(
 	line string,
 ) (abstractions.LocationId, abstractions.LocationId, error) {
 
-	locationIds := strings.Split(line, " ")
+	locationIds := strings.Fields(line)
 
 	leftLocationId, err := strconv.Atoi(locationIds[0])
 
@@ -83,7 +83,7 @@ func extractLocationIds(
 		return 0, 0, err
 	}
 
-	rightLocationId, err := strconv.Atoi(locationIds[0])
+	rightLocationId, err := strconv.Atoi(locationIds[1])
 
 	if err != nil {
 		fmt.Printf("Error converting location id '%s' to int: %v\n", locationIds[0], err)
@@ -93,19 +93,4 @@ func extractLocationIds(
 	return abstractions.LocationId(leftLocationId),
 		abstractions.LocationId(rightLocationId),
 		nil
-}
-
-func extractDirection(
-	line string,
-) (abstractions.Direction, error) {
-
-	if line[0] == 'L' {
-		return abstractions.Left, nil
-	}
-
-	if line[0] == 'R' {
-		return abstractions.Right, nil
-	}
-
-	return abstractions.Left, fmt.Errorf("Invalid direction '%c'\n", line[0])
 }

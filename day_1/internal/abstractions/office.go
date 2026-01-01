@@ -1,13 +1,13 @@
 package abstractions
 
 type Office struct {
-	List      *List
-	OtherList *List
+	List      *SortedLocationIds
+	OtherList *SortedLocationIds
 }
 
 func NewOffice(
-	list *List,
-	otherList *List,
+	list *SortedLocationIds,
+	otherList *SortedLocationIds,
 ) *Office {
 	return &Office{list, otherList}
 }
