@@ -6,13 +6,16 @@ Each day lives in its own folder (for example `day_1/`) with its own `go.mod`, a
 
 ## Status / structure
 
-At the moment, only **Day 1** is implemented:
+At the moment, the following days are implemented:
 
 - `day_1/` – **Day 1: Historian Hysteria (location ID reconciliation)**
   - Part 1: sort both lists and sum the pairwise absolute differences ("total distance")
   - Part 2: compute the similarity score by counting how often each left ID appears in the right list
 
-See `day_1/README.md` for details about the approach and how to run it.
+- `day_2/` – **Day 2: Red-Nosed Reports (reactor safety reports)**
+  - Part 1: count reports that are strictly increasing or strictly decreasing, with adjacent deltas in `[1..3]`
+
+See each day’s README (`day_1/README.md`, `day_2/README.md`) for details about the approach and how to run it.
 
 ## Running a day
 
