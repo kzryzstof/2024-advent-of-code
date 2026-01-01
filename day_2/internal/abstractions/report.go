@@ -14,6 +14,8 @@ const (
 
 	MinDelta = 1
 	MaxDelta = 3
+
+	BadLevelsTolerance = 1
 )
 
 type Report struct {
@@ -33,15 +35,32 @@ func (r *Report) GetStatus() Status {
 
 	deltaSign := 0
 
+	badLevelsCount := 0
+	skipPreviousLevel := false
+
 	for levelIndex := 1; levelIndex < len(r.levels); levelIndex++ {
 
 		/* Reads the current level as well as the previous one for comparison */
-		previousLevel := r.levels[levelIndex-1]
+		previousLevelIndex := levelIndex - 1
+
+		if skipPreviousLevel {
+			/* Skips the previous level was considered bad so we skip it on this step */
+			previousLevelIndex -= 1
+			skipPreviousLevel = false
+		}
+
+		previousLevel := r.levels[previousLevelIndex]
 		level := r.levels[levelIndex]
 
 		currentDeltaSign, err := r.getDeltaSign(level, previousLevel)
 
 		if err != nil {
+
+			if r.isBadLevelAcceptable(&badLevelsCount) {
+				skipPreviousLevel = true
+				continue
+			}
+
 			return StatusUnsafe
 		}
 
@@ -51,11 +70,29 @@ func (r *Report) GetStatus() Status {
 		}
 
 		if deltaSign != currentDeltaSign {
+			if r.isBadLevelAcceptable(&badLevelsCount) {
+				skipPreviousLevel = true
+				continue
+			}
+
 			return StatusUnsafe
 		}
 	}
 
 	return StatusSafe
+}
+
+func (r *Report) isBadLevelAcceptable(
+	badLevelsCount *int,
+) bool {
+
+	*badLevelsCount++
+
+	if *badLevelsCount <= BadLevelsTolerance {
+		return true
+	}
+
+	return false
 }
 
 func (r *Report) getDeltaSign(
