@@ -1,63 +1,80 @@
-# Advent of Code 2024 — Day 3 (Part 1)
+# Advent of Code 2024 — Day 3 (Part 2)
 
 This folder contains a Go solution for **Day 3: Mull It Over**.
 
-The puzzle input is a corrupted “program memory” that contains lots of garbage characters, plus some valid multiplication instructions of the form:
+The puzzle input is a corrupted “program memory” stream containing lots of garbage characters, plus some valid instructions.
 
-- `mul(X,Y)`
-  - `X` and `Y` are positive integers written with digits
-  - other similar-looking patterns (extra spaces, wrong brackets, punctuation inside, etc.) must be ignored
+## Problem recap
 
-The goal is to scan the corrupted memory, extract only the valid `mul(...)` instructions, evaluate them, and return the **sum of all products**.
+Valid instructions are:
+
+- `mul(X,Y)` where `X` and `Y` are numbers written with digits
+- `do()` which **enables** future `mul` instructions
+- `don't()` which **disables** future `mul` instructions
+
+Rules:
+
+- Only the **most recent** `do()` / `don't()` instruction applies.
+- At the beginning of the program, `mul` instructions are **enabled**.
+- Invalid / corrupted sequences must be ignored.
+
+Goal:
+
+- Scan the corrupted memory left-to-right and sum the products of only the **enabled** `mul(X,Y)` instructions.
 
 ## Implementation overview
 
 ### 1) Read the full program memory (`internal/io/program_reader.go`)
 
-The code reads the whole input file into a single string:
+The reader loads the entire file into a single string:
 
-- `bufio.Scanner` iterates over every line
-- each line is appended to one big `lines` string
-- line breaks are effectively removed (which is fine because valid instructions can appear anywhere in the stream)
+- `bufio.Scanner` reads each line
+- lines are concatenated into one `lines` string
 
-### 2) Extract valid instructions with a regex
+### 2) Tokenize with a single regex (do / don't / mul)
 
-We use a regular expression that matches only the exact valid syntax:
+A single regular expression is used to find every relevant token in order:
 
-- `mul\((\d+),(\d+)\)`
+- `do\(\)|don\'t\(\)|mul\((\d+),(\d+)\)`
 
-Meaning:
+This matches:
 
-- literal `mul(`
-- capture 1+ digits for the left operand
-- a literal comma
-- capture 1+ digits for the right operand
-- literal `)`
+- `do()`
+- `don't()` (note the literal apostrophe)
+- `mul(<digits>,<digits>)` and captures the two operands
 
-This intentionally **does not** match invalid variants like:
+Because the regex is strict, it *does not* match invalid variants such as `mul[3,7]`, `mul ( 2 , 4 )`, or `mul(4*,...)`.
 
-- `mul ( 2 , 4 )` (spaces)
-- `mul[3,7]` (wrong brackets)
-- `mul(4*,...` (non-digits)
+The code uses `FindAllStringSubmatchIndex` so we can:
 
-The code calls `FindAllStringSubmatchIndex` to get the exact ranges for the full match and each captured group, then slices the input string to retrieve the operand substrings.
+- iterate matches left-to-right
+- slice the original input string to extract the captured operand substrings
 
-### 3) Parse operands and build instructions
+### 3) Single pass state machine: enabled/disabled
 
-For each match:
+The reader maintains a boolean state:
 
-- parse the captured groups with `strconv.Atoi`
-- create an `abstractions.Instruction{ Operation: "mul", LeftOperand: ..., RightOperand: ... }`
+- `isEnabled := true` initially
+
+For each matched token:
+
+- If it’s `do()`, set `isEnabled = true`.
+- If it’s `don't()`, set `isEnabled = false`.
+- Otherwise it must be a `mul(X,Y)` match:
+  - if `isEnabled` is `false`, ignore it
+  - if `isEnabled` is `true`, parse `X` and `Y` with `strconv.Atoi` and append a `mul` instruction
+
+Only `mul` instructions that are enabled at the time they appear are kept.
 
 ### 4) Execute and sum (`internal/abstractions/program.go`)
 
-- `Program.Execute()` iterates over all extracted instructions
-- `Instruction.Execute()` multiplies operands for the `mul` operation
-- all results are summed into a single `int64` total
+- `Program.Execute()` iterates over the collected instructions.
+- `Instruction.Execute()` multiplies operands for the `mul` operation.
+- All products are summed into a single `int64` total.
 
 The CLI prints:
 
-- how many `mul` instructions were extracted
+- how many enabled `mul` instructions were collected
 - the final sum
 - execution time
 
@@ -74,4 +91,3 @@ Expected output shape:
 - `Executing <n> instructions`
 - `The total is <number>`
 - `Execution time: <duration>`
-

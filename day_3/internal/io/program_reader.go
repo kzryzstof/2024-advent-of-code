@@ -42,15 +42,31 @@ func (r *ProgramReader) Read() *abstractions.Program {
 
 	instructions := make([]abstractions.Instruction, 0)
 
-	re := regexp.MustCompile(`mul\((\d+),(\d+)\)`)
+	re := regexp.MustCompile(`do\(\)|don\'t\(\)|mul\((\d+),(\d+)\)`)
 
 	matches := re.FindAllStringSubmatchIndex(lines, -1)
 
+	isEnabled := true
+
 	for _, m := range matches {
+
 		// m[0],m[1] = full match range
 		// m[2],m[3] = group 1 range (left number)
 		// m[4],m[5] = group 2 range (right number)
-		//_ := lines[m[0]:m[1]]
+		operation := lines[m[0]:m[1]]
+
+		if operation == "do()" {
+			isEnabled = true
+			continue
+		} else if operation == "don't()" {
+			isEnabled = false
+			continue
+		}
+
+		if !isEnabled {
+			continue
+		}
+
 		left := lines[m[2]:m[3]]
 		right := lines[m[4]:m[5]]
 
