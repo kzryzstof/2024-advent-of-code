@@ -17,10 +17,10 @@ func main() {
 	fmt.Println(inputFile)
 
 	/* 	Initializes the reader */
-	instructionsParser := getReader(inputFile)
+	reader := getReader(inputFile)
 
 	/* Reads all the lists from the office */
-	office := instructionsParser.Read()
+	office := reader.Read()
 
 	similarityScore, err := algorithms.CompareSimilarityScore(office)
 
@@ -38,13 +38,12 @@ func main() {
 func getReader(
 	inputFile []string,
 ) *io.OfficeReader {
-	instructionsReader, err := io.NewReader(inputFile[0])
+	reader, err := io.NewReader(inputFile[0])
 
 	if err != nil {
 		fmt.Printf("Error parsing input file: %s\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("Parser initialized: %v\n", instructionsReader)
-	return instructionsReader
+	return reader
 }

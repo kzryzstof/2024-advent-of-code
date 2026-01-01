@@ -1,7 +1,6 @@
 package main
 
 import (
-	"day_2/internal/algorithms"
 	"fmt"
 	"os"
 	"time"
@@ -17,34 +16,26 @@ func main() {
 	fmt.Println(inputFile)
 
 	/* 	Initializes the reader */
-	instructionsParser := getReader(inputFile)
+	reader := getReader(inputFile)
 
-	/* Reads all the lists from the office */
-	office := instructionsParser.Read()
-
-	similarityScore, err := algorithms.CompareSimilarityScore(office)
-
-	if err != nil {
-		fmt.Printf("Error comparing lists: %s\n", err)
-		os.Exit(1)
-	}
+	/* Reads all the reports */
+	reports := reader.Read()
 
 	/* Prints the results */
-	fmt.Printf("Similarity score between the two lists: %d\n", similarityScore)
+	fmt.Printf("Reports: %d\n", len(reports))
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }
 
 func getReader(
 	inputFile []string,
-) *io.OfficeReader {
-	instructionsReader, err := io.NewReader(inputFile[0])
+) *io.ReportsReader {
+	reader, err := io.NewReader(inputFile[0])
 
 	if err != nil {
 		fmt.Printf("Error parsing input file: %s\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("Parser initialized: %v\n", instructionsReader)
-	return instructionsReader
+	return reader
 }
