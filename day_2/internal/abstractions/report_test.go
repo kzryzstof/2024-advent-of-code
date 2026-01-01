@@ -74,6 +74,41 @@ func TestReport_GetStatus(t *testing.T) {
 			},
 			expectedStatus: StatusSafe,
 		},
+		{
+			name: "direction_change_late_is_unsafe (89 91 92 95 93 94)",
+			levels: []Level{
+				Level(89),
+				Level(91),
+				Level(92),
+				Level(95),
+				Level(93),
+				Level(94),
+			},
+			expectedStatus: StatusSafe,
+		},
+		{
+			name: "direction_change_with_dip_is_unsafe (77 78 79 82 79 83)",
+			levels: []Level{
+				Level(77),
+				Level(78),
+				Level(79),
+				Level(82),
+				Level(79),
+				Level(83),
+			},
+			expectedStatus: StatusSafe,
+		},
+		{
+			name: "direction_change_early_is_unsafe (55 54 57 60 61)",
+			levels: []Level{
+				Level(55),
+				Level(54),
+				Level(57),
+				Level(60),
+				Level(61),
+			},
+			expectedStatus: StatusSafe,
+		},
 	}
 
 	for _, tt := range tests {

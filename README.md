@@ -14,6 +14,7 @@ At the moment, the following days are implemented:
 
 - `day_2/` – **Day 2: Red-Nosed Reports (reactor safety reports)**
   - Part 1: count reports that are strictly increasing or strictly decreasing, with adjacent deltas in `[1..3]`
+  - Part 2: same rules, but a report also counts as safe if removing **one** level makes it safe ("Problem Dampener")
 
 See each day’s README (`day_1/README.md`, `day_2/README.md`) for details about the approach and how to run it.
 

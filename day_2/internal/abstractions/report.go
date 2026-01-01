@@ -14,8 +14,6 @@ const (
 
 	MinDelta = 1
 	MaxDelta = 3
-
-	BadLevelsTolerance = 1
 )
 
 type Report struct {
@@ -33,34 +31,50 @@ func NewReport(
 
 func (r *Report) GetStatus() Status {
 
+	actualStatus := r.getStatus(r.levels)
+
+	if actualStatus != StatusUnsafe {
+		return actualStatus
+	}
+
+	for removedIndex := range r.levels {
+
+		alteredLevels := make([]Level, 0)
+
+		for levelIndex, level := range r.levels {
+			if levelIndex == removedIndex {
+				continue
+			}
+			alteredLevels = append(alteredLevels, level)
+		}
+
+		alteredStatus := r.getStatus(alteredLevels)
+
+		if alteredStatus != StatusUnsafe {
+			return alteredStatus
+		}
+	}
+
+	return StatusUnsafe
+}
+
+func (r *Report) getStatus(
+	levels []Level,
+) Status {
+
 	deltaSign := 0
 
-	badLevelsCount := 0
-	skipPreviousLevel := false
-
-	for levelIndex := 1; levelIndex < len(r.levels); levelIndex++ {
+	for levelIndex := 1; levelIndex < len(levels); levelIndex++ {
 
 		/* Reads the current level as well as the previous one for comparison */
 		previousLevelIndex := levelIndex - 1
 
-		if skipPreviousLevel {
-			/* Skips the previous level was considered bad so we skip it on this step */
-			previousLevelIndex -= 1
-			skipPreviousLevel = false
-		}
-
-		previousLevel := r.levels[previousLevelIndex]
-		level := r.levels[levelIndex]
+		previousLevel := levels[previousLevelIndex]
+		level := levels[levelIndex]
 
 		currentDeltaSign, err := r.getDeltaSign(level, previousLevel)
 
 		if err != nil {
-
-			if r.isBadLevelAcceptable(&badLevelsCount) {
-				skipPreviousLevel = true
-				continue
-			}
-
 			return StatusUnsafe
 		}
 
@@ -70,26 +84,11 @@ func (r *Report) GetStatus() Status {
 		}
 
 		if deltaSign != currentDeltaSign {
-
-			if r.isBadLevelAcceptable(&badLevelsCount) {
-				skipPreviousLevel = true
-				continue
-			}
-
 			return StatusUnsafe
 		}
 	}
 
 	return StatusSafe
-}
-
-func (r *Report) isBadLevelAcceptable(
-	badLevelsCount *int,
-) bool {
-
-	*badLevelsCount++
-
-	return *badLevelsCount <= BadLevelsTolerance
 }
 
 func (r *Report) getDeltaSign(

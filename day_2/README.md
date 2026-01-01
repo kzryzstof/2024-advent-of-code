@@ -1,49 +1,59 @@
-# Advent of Code 2024 — Day 2 (Part 1)
+# Advent of Code 2024 — Day 2 (Part 2)
 
 This folder contains a Go solution for **Day 2: Red-Nosed Reports**.
 
-The input is a set of *reports*, one per line. Each report is a list of integer **levels** separated by spaces.
+The input is a set of *reports*, one report per line. Each report is a list of integer **levels** separated by spaces.
 
-The goal for Part 1 is to count how many reports are **safe**.
+The goal here is to count how many reports are **safe** when the reactor’s **Problem Dampener** is enabled.
 
-## Safety rules
+## Safety rules (with the Problem Dampener)
 
-A report is *safe* if **both** are true:
+A report counts as *safe* if either:
 
-1. The levels are **strictly** monotonically increasing *or* **strictly** monotonically decreasing.
+- it is already safe under the original rules, **or**
+- removing **exactly one** level (any position) makes it safe.
+
+A report is safe under the original rules if:
+
+1. The levels are all **strictly** monotonically increasing or all **strictly** monotonically decreasing.
 2. For every adjacent pair, the absolute difference is between **1 and 3** (inclusive).
 
-That means equal adjacent numbers (delta = 0) are unsafe, and large jumps (delta > 3) are unsafe.
+So:
+- equal adjacent numbers (`delta = 0`) are not allowed,
+- jumps larger than 3 are not allowed,
+- switching from increasing to decreasing (or vice-versa) is not allowed.
 
 ## Implementation overview
 
 ### Parsing input (`internal/io/reports_reader.go`)
 
 - The file is scanned line-by-line with a `bufio.Scanner`.
-- Each line is split using `strings.Fields(line)`.
-  - This splits on runs of whitespace and drops empty fields.
-- Each field is parsed with `strconv.Atoi` and stored as an `abstractions.Level`.
+- Each line is split using `strings.Fields(line)` (splits on whitespace and drops empty fields).
+- Each value is parsed with `strconv.Atoi` and stored as an `abstractions.Level`.
 - A `Report` is created with an id (line number) and the slice of levels.
 
 ### Report model and safety check (`internal/abstractions/report.go`)
 
 Safety is determined by `Report.GetStatus()`.
 
-The key idea is to track the **sign of the deltas** between adjacent levels:
+It works in two phases:
 
-- For each adjacent pair, compute `delta = level - previousLevel`.
-- Compute `abs(delta)` and reject the report if it’s outside `[MinDelta..MaxDelta]`.
-  - `MinDelta = 1`, `MaxDelta = 3`
-- Convert the delta into a sign:
-  - negative (or zero) → `-1`
-  - positive → `+1`
+1) **Check the report as-is**
 
-Then:
+- `GetStatus()` calls an internal helper `getStatus(levels)`.
+- `getStatus` determines whether the sequence is strictly monotonic and each adjacent delta is within bounds.
+- If the report is safe, we return `StatusSafe` immediately.
 
-- The first valid delta sets the expected direction (`deltaSign`).
-- Every subsequent delta must have the **same sign**, otherwise the report switches direction and is unsafe.
+2) **If unsafe, try the Problem Dampener (remove one level)**
 
-If all pairs pass these checks, the report is marked `StatusSafe`.
+- If the original report is unsafe, `GetStatus()` tries removing one level at every index:
+  - build a new `alteredLevels` slice that skips `removedIndex`
+  - run `getStatus(alteredLevels)`
+  - if any removal yields `StatusSafe`, the report counts as safe
+
+If none of the single-level removals produce a safe report, it remains `StatusUnsafe`.
+
+Complexity note: this is a simple brute-force approach: for a report of length `n`, we may test up to `n` altered reports, each taking `O(n)` to check, so worst-case `O(n²)` per report. For typical AoC input sizes this is fast enough and keeps the code straightforward.
 
 ### Counting safe reports (`internal/algorithms/count_safe_reports.go`)
 
@@ -69,4 +79,3 @@ Expected output shape:
 
 - `Safe reports: <number>`
 - `Execution time: <duration>`
-
