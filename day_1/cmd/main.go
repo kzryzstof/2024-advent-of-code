@@ -22,7 +22,7 @@ func main() {
 	/* Reads all the lists from the office */
 	office := instructionsParser.Read()
 
-	distance, err := algorithms.CompareLists(office)
+	similarityScore, err := algorithms.CompareSimilarityScore(office)
 
 	if err != nil {
 		fmt.Printf("Error comparing lists: %s\n", err)
@@ -30,7 +30,7 @@ func main() {
 	}
 
 	/* Prints the results */
-	fmt.Printf("Distance between the two lists: %d\n", distance)
+	fmt.Printf("Similarity score between the two lists: %d\n", similarityScore)
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }

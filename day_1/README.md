@@ -1,15 +1,26 @@
-# Advent of Code 2024 — Day 1 (Part 1)
+# Advent of Code 2024 — Day 1 (Part 2)
 
-This folder contains a Go solution for the Day 1 puzzle where you’re given two columns of **location IDs** (left list and right list) and must compute the **total distance** between the lists.
+This folder contains a Go solution for **Day 1 — Part 2** (often referred to as “Day 2” in this repo’s notes): compute the **similarity score** between two lists of location IDs.
 
-## Problem recap
+## Problem recap (similarity score)
 
-- Each input line contains two integers: the left location ID and the right location ID.
-- To compare the lists, you:
-  1. sort the left list ascending
-  2. sort the right list ascending
-  3. pair items by index (smallest with smallest, 2nd smallest with 2nd smallest, …)
-  4. sum `abs(left[i] - right[i])` over all pairs
+You’re given a file with two columns of integers (left list and right list). The similarity score is:
+
+- For each number `x` in the **left** list, count how many times `x` appears in the **right** list.
+- Add `x * countRight(x)` to the total.
+
+Example:
+
+```
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+```
+
+Right list contains `3` three times, so each `3` in the left contributes `3 * 3 = 9`.
 
 ## Implementation overview
 
@@ -17,30 +28,40 @@ This folder contains a Go solution for the Day 1 puzzle where you’re given two
 
 - The input file is scanned line-by-line.
 - Each line is split with `strings.Fields(line)`.
-  - This splits on any run of whitespace and **automatically drops empty parts**, which is handy because the puzzle input uses variable spacing.
-- The two resulting tokens are parsed with `strconv.Atoi` and appended to the left and right slices.
+  - This splits on any run of whitespace and **drops empty parts**, which fits the puzzle input formatting.
+- The two tokens are parsed with `strconv.Atoi` and appended to the left and right slices.
 
-### Data model + sorting (`internal/abstractions/*`)
+### Sorting (`internal/abstractions/sorted_location_ids.go`)
 
-- The two slices are wrapped in `SortedLocationIds` via `abstractions.NewList(ids)`.
-- `NewList` sorts the slice in place using `sort.Slice`, ensuring both lists are ordered before comparison.
+- Both slices are wrapped with `abstractions.NewList(ids)`.
+- `NewList` sorts the slice in-place (`sort.Slice`), producing two sorted lists.
 
-### Distance computation (`internal/algorithms/compare_lists.go`)
+### Similarity score algorithm (`internal/algorithms/compute_similarity_score.go`)
 
-- First, the code verifies both lists have the same length.
-- Then it iterates from `0..n-1` and accumulates:
+The implementation leverages the fact that **both lists are sorted** and uses a two-pointer style scan:
 
-  `total += abs(float64(left[i]) - float64(right[i]))`
+- `locationIndex` walks the left list.
+- `otherLocationIndex` walks the right list and **never moves backward**.
 
-- The result is returned as `abstractions.Distance` (`uint64`).
+For each `locationId` from the left list:
+
+1. Advance through the right list while `otherLocationId < locationId`.
+2. When `otherLocationId == locationId`, count how many equal values are found (for the current scan position) and store that as `similarNumbers`.
+3. If `otherLocationId > locationId`, stop early for this left value (because no match exists at the current right pointer position).
+4. Add `uint64(locationId) * similarNumbers` to the running total.
+
+The return type is `abstractions.SimilarityScore` (`uint64`).
+
+Notes:
+- The code checks both lists have the same length and returns an error otherwise.
+- Because `otherLocationIndex` only moves forward, the scan is efficient on already-sorted inputs.
 
 ### Entry point (`cmd/main.go`)
 
 - Reads the input file path from the first CLI argument.
-- Builds the in-memory `Office` (two sorted lists).
-- Calls `algorithms.CompareLists` and prints:
-  - the computed distance
-  - execution time
+- Parses and sorts both lists into an `Office`.
+- Calls `algorithms.CompareSimilarityScore`.
+- Prints the similarity score and execution time.
 
 ## How to run
 
@@ -50,5 +71,7 @@ From the `day_1` directory:
 go run ./cmd ./input.txt
 ```
 
-(You can replace `./input.txt` with any file in the same two-column format.)
+Expected output shape:
 
+- `Similarity score between the two lists: <number>`
+- `Execution time: <duration>`
