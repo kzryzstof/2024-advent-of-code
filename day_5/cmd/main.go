@@ -19,21 +19,17 @@ func main() {
 	reader := getReader(inputFile)
 
 	/* Reads all the reports */
-	grid := reader.Read()
-
-	count := grid.CountXmasPatterns()
-
-	//	1053	Too low!
+	safetyProtocol, updates := reader.Read()
 
 	/* Prints the results */
-	fmt.Printf("The 'XMAS' pattern appeared %d times\n", count)
+	fmt.Printf("Read %v %v\n", safetyProtocol, updates)
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }
 
 func getReader(
 	inputFile []string,
-) *io.GridReader {
+) *io.SafetyProtocolReader {
 	reader, err := io.NewReader(inputFile[0])
 
 	if err != nil {
