@@ -21,8 +21,10 @@ func main() {
 	/* Reads all the reports */
 	safetyProtocol, updates := reader.Read()
 
+	middlePagesCount := updates.CheckUpdates(safetyProtocol)
+
 	/* Prints the results */
-	fmt.Printf("Read %v %v\n", safetyProtocol, updates)
+	fmt.Printf("The sum of middle pages is %d\n", middlePagesCount)
 
 	fmt.Printf("Execution time: %v\n", time.Since(startTime))
 }

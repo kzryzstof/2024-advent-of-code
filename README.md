@@ -24,6 +24,9 @@ At the moment, the following days are implemented:
   - Part 1: count all occurrences of `XMAS` in a letter grid across 8 directions (including backwards and diagonals)
   - Part 2: count all X-MAS patterns (two `MAS` crossing diagonally in an X shape, either direction on each diagonal)
 
+- `day_5/` – **Day 5: Print Queue (page ordering rules)**
+  - Part 1: keep only updates that already satisfy all applicable `X|Y` ordering rules, then sum the middle page number of each valid update
+
 See each day’s README (`day_1/README.md`, `day_2/README.md`, `day_3/README.md`, `day_4/README.md`) for details about the approach and how to run it.
 
 ## Running a day

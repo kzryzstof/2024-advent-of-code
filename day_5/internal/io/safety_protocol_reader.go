@@ -86,8 +86,9 @@ func (r *SafetyProtocolReader) extractUpdates(
 		numbers := strings.Split(line, ",")
 		pageNumbers := make([]abstractions.PageNumber, len(numbers))
 
-		for index, pageNumber := range pageNumbers {
-			pageNumbers[index] = abstractions.PageNumber(pageNumber)
+		for index, pageNumber := range numbers {
+			number, _ := strconv.ParseInt(pageNumber, 10, 64)
+			pageNumbers[index] = abstractions.PageNumber(number)
 		}
 
 		updates = append(
